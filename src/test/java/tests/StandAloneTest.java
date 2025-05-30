@@ -86,9 +86,10 @@ public class StandAloneTest {
         driver.findElement(By.xpath("//span[text()=' India']")).click();  //(//button[@class='ta-item list-group-item ng-star-inserted'])[2]
         //span[text()=' India']
 
-        Thread.sleep(5000);
+        Thread.sleep(2000);
 //        JavascriptExecutor jse1 = (JavascriptExecutor)driver;
-        jse.executeScript("window.scrollBy(0,250)");
+//        jse.executeScript("window.scrollBy(0,250)");
+        jse.executeScript("window.scrollTo(0, document.body.scrollHeight)");
 //        JavascriptExecutor executor = (JavascriptExecutor)driver;
 //        executor.executeScript("document.body.style.zoom = '0.75'");
         Thread.sleep(2000);
@@ -101,8 +102,8 @@ public class StandAloneTest {
 //
         System.out.println("worked");
         Thread.sleep(5000);
-//        driver.close();
-//        driver.quit();
+        driver.close();
+        driver.quit();
 
     }
 }

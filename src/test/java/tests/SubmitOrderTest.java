@@ -5,10 +5,9 @@ import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import seleniumFrameworkDesign.pageobjects.*;
-import testcomponents.BaseTest;
+import testComponents.BaseTest;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 public class SubmitOrderTest extends BaseTest {
         String productName ="ZARA COAT 3";
@@ -32,7 +31,10 @@ public class SubmitOrderTest extends BaseTest {
         Assert.assertTrue(match);  //The assert statement is used with a Boolean expression
         CheckoutPage checkoutPage = cartPage.goToCheckout();
 //        Thread.sleep(5000);
+        JavascriptExecutor executor = (JavascriptExecutor)driver;
+        executor.executeScript("document.body.style.zoom = '0.75'");
         checkoutPage.selectCountry("india");
+        Thread.sleep(5000);
         ConfirmationPage confirmationpage =checkoutPage.submitOrder();
         // validation
         String confirmMessage = confirmationpage.getConfirmMessage();
@@ -48,15 +50,42 @@ public class SubmitOrderTest extends BaseTest {
             OrderPage orderPage = productCatalouge.goToOrdersPage();
             Assert.assertTrue(orderPage.VerifyOrderDisplay(productName));
     }
+
+    // video - 172
     @DataProvider
     public Object[][] getData() throws IOException {
 //        Object is a parent data type for all types of data , so it can access any data weather String , integer , float etc.
-        return new Object[][] {{"virensingh2022@gmail.com","Rahul@1234","ADIDAS ORIGINAL"},{"singhvirender168.4@gmail.com","Rahul@1234","ADIDAS ORIGINAL"}};
+        return new Object[][] {{"virensingh2022@gmail.com","Rahul@1234","ZARA COAT 3"},{"singhvirender168.4@gmail.com","Rahul@1234","ADIDAS ORIGINAL"}};
+    }
+
+    // video - 173
+//    @DataProvider
+//    public Object[][] getData()
+//    {
+//        HashMap<String,String> map = new HashMap<String, String>();
+//        map.put("email","virensingh2022@gmail.com");
+//        map.put("password","Rahul@1234" );
+//        map.put("product","ZARA COAT 3");
 //
-//        List<HashMap<String, String>> data = getJsonDataToMap(System.getProperty("user.dir") + "\\src\\test\\java\\data\\PurchaseOrder.json");
+//        HashMap<String,String> map1 = new HashMap<String, String>();
+//        map.put("email","singhvirender168.4@gmail.com");
+//        map.put("password","Rahul@1234" );
+//        map.put("product","ADIDAS ORIGINAL");
+//
+//        return new Object[][] {{map},{map1}};
+//    }
+
+
+    //run purchase order.xml // video - 174
+//    @DataProvider
+//    public Object[][] getData() throws IOException
+//    {
+////        Object is a parent data type for all types of data , so it can access any data weather String , integer , float etc.
+////        return new Object[][] {{"virensingh2022@gmail.com","Rahul@1234","ADIDAS ORIGINAL"},{"singhvirender168.4@gmail.com","Rahul@1234","ADIDAS ORIGINAL"}};
+////
+//        List<HashMap<String, String>> data = getJsonDataToMap(System.getProperty("user.dir")+"//src//test//java//data//PurchaseOrder.json");
 //                                                            //sending entire String path as an argument and catching it in filePath in (BaseTest class)
 //        return new Object[][] {{data.get(0)},{data.get(1)}};
-    }
-}
+//
 
-//video - 171
+}

@@ -6,6 +6,10 @@
             <include name="Purchase"/>
         </run>
     </groups>
+
+    <listeners>
+        <listener class-name="testComponents.Listeners"/>
+    </listeners>
     <test verbose="2" thread-count="5" preserve-order="true" name="Submit Order Test">
         <classes>
             <class name="tests.SubmitOrderTest"/>

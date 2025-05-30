@@ -1,7 +1,7 @@
 package seleniumFrameworkDesign.pageobjects;
 
 import org.openqa.selenium.interactions.Actions;
-import seleniumFrameworkDesign.abstractcomponents.AbstractComponents;
+import seleniumFrameworkDesign.abstractComponents.AbstractComponents;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -40,6 +40,7 @@ public class CheckoutPage extends AbstractComponents
 
     public ConfirmationPage submitOrder()
     {
+        scrollDown();
         submit.click();
         return new ConfirmationPage(driver);
     }

@@ -1,6 +1,6 @@
 package seleniumFrameworkDesign.pageobjects;
 
-import seleniumFrameworkDesign.abstractcomponents.AbstractComponents;
+import seleniumFrameworkDesign.abstractComponents.AbstractComponents;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
