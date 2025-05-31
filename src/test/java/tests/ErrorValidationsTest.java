@@ -18,7 +18,7 @@ public class ErrorValidationsTest extends BaseTest {
 
 //                String productName = "ZARA COAT 3";
                 landingPage.loginApplication("virensingh2022@gmail.com", "ahul@1234"); // have put the wrong password intentionally
-                Assert.assertEquals("Incorrect email  password.", landingPage.getErrorMessage());
+                Assert.assertEquals("Incorrect email or password.", landingPage.getErrorMessage());
                 //use "retryAnalyzer=Retry.class" in the test that is expected to fail, it will re-run the test
         }
 

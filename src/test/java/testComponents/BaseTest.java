@@ -11,9 +11,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
-import org.openqa.selenium.edge.EdgeOptions; // Import EdgeOptions
-import org.openqa.selenium.firefox.FirefoxDriver; // Import FirefoxDriver
-import org.openqa.selenium.firefox.FirefoxOptions; // Import FirefoxOptions
+import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.firefox.FirefoxOptions;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import seleniumFrameworkDesign.pageobjects.LandingPage;
@@ -32,7 +32,6 @@ public class BaseTest
 {
     public WebDriver driver;
     public LandingPage landingPage;
-    // Add a ThreadLocal for WebDriver (if not already present from previous merges)
     public static ThreadLocal<WebDriver> tlDriver = new ThreadLocal<>();
 
     public WebDriver InitializeDriver() throws IOException
@@ -42,52 +41,59 @@ public class BaseTest
                 "\\src\\main\\java\\seleniumFrameworkDesign\\resources\\GlobalData.properties");
         prop.load(fis);
 
-        // Get browser name from system properties first, then fallback to GlobalData.properties
         String browserName = System.getProperty("browser") != null ? System.getProperty("browser") : prop.getProperty("browser");
 
-        if(browserName.equalsIgnoreCase("chrome"))
+        // Use a variable to track if headless mode is requested
+        boolean isHeadless = browserName.contains("headless");
+
+        if(browserName.contains("chrome")) // Check for "chrome" or "headless-chrome"
         {
             WebDriverManager.chromedriver().setup();
             ChromeOptions options = new ChromeOptions();
             options.addArguments("--remote-allow-origins=*");
             options.addArguments("--incognito");
-            if(browserName.contains("headless"))
+            if(isHeadless) // Apply headless argument if the browserName contained "headless"
             {
-                options.addArguments("headless");
+                options.addArguments("--headless"); // Correct argument for headless mode
+                options.addArguments("--disable-gpu"); // Recommended for headless on some systems
+                options.addArguments("--window-size=1920,1080"); // Set a fixed window size for headless
             }
             driver = new ChromeDriver(options);
-            driver.manage().window().setSize(new Dimension(1440,900)); // full screen
+            // Only set window size if not headless or if you want to override the headless window size
+            if(!isHeadless) {
+                driver.manage().window().setSize(new Dimension(1440,900)); // full screen mode for non-headless
+            }
         }
         else if(browserName.equalsIgnoreCase("edge"))
         {
-            WebDriverManager.edgedriver().setup(); // Use WebDriverManager for Edge
+            WebDriverManager.edgedriver().setup();
             EdgeOptions options = new EdgeOptions();
-            options.addArguments("--remote-allow-origins=*"); // Similar to Chrome
-            options.addArguments("--inprivate"); // Edge's incognito mode equivalent
+            options.addArguments("--remote-allow-origins=*");
+            options.addArguments("--inprivate");
             driver = new EdgeDriver(options);
         }
         else if (browserName.equalsIgnoreCase("firefox"))
         {
-            WebDriverManager.firefoxdriver().setup(); // Use WebDriverManager for Firefox
+            WebDriverManager.firefoxdriver().setup();
             FirefoxOptions options = new FirefoxOptions();
-            options.addArguments("-private"); // Firefox's incognito mode equivalent
-            // Firefox doesn't typically need --remote-allow-origins for standard use
+            options.addArguments("-private");
             driver = new FirefoxDriver(options);
         }
-        // Handle a default case or throw an exception if browser name is invalid
         else {
-            throw new IllegalArgumentException("Browser '" + browserName + "' is not supported. Please choose 'chrome', 'edge', or 'firefox'.");
+            throw new IllegalArgumentException("Browser '" + browserName + "' is not supported. Please choose 'chrome', 'headless-chrome', 'edge', or 'firefox'.");
         }
 
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-        driver.manage().window().maximize();
+        // Maximize only if not headless, as headless usually has a fixed size
+        if (!isHeadless) {
+            driver.manage().window().maximize();
+        }
 
-        // Set the driver for the current thread in ThreadLocal (important for parallel execution)
         tlDriver.set(driver);
         return driver;
     }
 
-    // Generic method to read JSON data into a List of HashMaps
+    // ... rest of your BaseTest class remains the same
     public List<HashMap<String, String>> getJsonDataToMap(String filePath) throws IOException {
         String jsonContent = FileUtils.readFileToString(new File(filePath), StandardCharsets.UTF_8);
         ObjectMapper mapper = new ObjectMapper();
@@ -107,17 +113,15 @@ public class BaseTest
     @AfterMethod(alwaysRun = true)
     public void tearDown()
     {
-        // Use ThreadLocal to get the driver and quit it
         WebDriver currentDriver = tlDriver.get();
         if (currentDriver != null) {
-            currentDriver.quit(); // Use quit() for full browser closure
-            tlDriver.remove(); // Remove from ThreadLocal after use
+            currentDriver.quit();
+            tlDriver.remove();
         }
     }
 
-    // Method to take a screenshot, now retrieving driver from ThreadLocal
-    public String getScreenshot(String testCaseName, WebDriver driver) throws IOException { // Removed WebDriver driver parameter as it's fetched from ThreadLocal
-        WebDriver currentDriver = tlDriver.get(); // Get the driver for the current thread
+    public String getScreenshot(String testCaseName, WebDriver driver) throws IOException {
+        WebDriver currentDriver = tlDriver.get();
         if (currentDriver == null) {
             System.out.println("Driver is null when trying to take screenshot for: " + testCaseName);
             return null;
@@ -125,7 +129,7 @@ public class BaseTest
         File ts = ((TakesScreenshot) currentDriver).getScreenshotAs(OutputType.FILE);
         String filePath = getProperty("user.dir") + File.separator + "reports" + File.separator + testCaseName + ".png";
         FileUtils.copyFile(ts, new File(filePath));
-        System.out.println("Screenshot saved at: " + filePath); // Debug log
+        System.out.println("Screenshot saved at: " + filePath);
         return filePath;
     }
 }
