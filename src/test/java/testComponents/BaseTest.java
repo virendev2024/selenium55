@@ -64,13 +64,23 @@ public class BaseTest
                 driver.manage().window().setSize(new Dimension(1440,900)); // full screen mode for non-headless
             }
         }
-        else if(browserName.equalsIgnoreCase("edge"))
+        else if(browserName.contains("edge"))
         {
             WebDriverManager.edgedriver().setup();
             EdgeOptions options = new EdgeOptions();
             options.addArguments("--remote-allow-origins=*");
             options.addArguments("--inprivate");
+
+            if(isHeadless) // Apply headless argument if the browserName contained "headless"
+            {
+                options.addArguments("--headless"); // Correct argument for headless mode
+                options.addArguments("--disable-gpu"); // Recommended for headless on some systems
+                options.addArguments("--window-size=1920,1080"); // Set a fixed window size for headless
+            }
             driver = new EdgeDriver(options);
+            if(!isHeadless) {
+                driver.manage().window().setSize(new Dimension(1440,900)); // full screen mode for non-headless
+            }
         }
         else if (browserName.equalsIgnoreCase("firefox"))
         {
